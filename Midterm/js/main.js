@@ -4,11 +4,11 @@
 // a description
 // background color
 var slides = [
-  { title: "Title", description: "This is the description", color: "#F0F0F0" },
-  { title: "title1", description: "the first description", color: "#F0F0F0" },
-  { title: "title2", description: "the second description", color: "#F0F0F0" },
-  { title: "title3", description: "the first description", color: "#F0F0F0" },
-  { title: "made up title", description: "made up description", color: "#F0F0F0" }
+  { title: "Philadelphia Farmers Markets Guide", description: "This website is a guidebook for citizens and farmers of Philly to know the business hour and other information for Farmers Markest.You can click the marker for more information.", color: "#F0F0F0" },
+  { title: "Farmers Markets work on weekends", description: "There are 14 Farmers Markets open on weekends. Among them, 10 Farmers Markets open on Saturday and 4 Farmers Markets open on Saturdau. Please click the marker to check more details.", color: "#F0F0F0" },
+  { title: "Farmers Markets work on weekdays", description: "There are 36 Farmers Markets open on weekdays. Please click the marker to check more details.", color: "#F0F0F0" },
+  { title: "Farmers Markets work all year around", description: "Only 3 Farmers Markets open all year around, and other Farmers Markets only open a few months, mostly from Spring to Fall.", color: "#F0F0F0" },
+  { title: "Farmers Markets accept Philly Food Bucks", description: "Philly Food Bucks program is a healthy food incentive program, which encourages food stamp recipients to use their benefits to purchase local and fresh ingredients at participating Farmers Markets throughout the Philly. 36 of 50 Farmers Markets participate in this program.", color: "#F0F0F0" }
 ]
 var currentSlide = 0
 
@@ -21,9 +21,7 @@ var loadSlide = function(slide) {
 
 
 
-var url_1;
-var lat_1;
-var lon_1;
+var url_1 = "https://raw.githubusercontent.com/myzhang9696/Midterm_Miaoyan_Zhang/master/Midterm/file/Farmers_Markets.geojson";
 var downloadData;
 
 
@@ -36,8 +34,15 @@ var parseData = function(Data_)
 var makeMarkers = function(Data_) {
   var Markers_ = [];
   for(var i = 0; i<Data_.length; i++){
-    var mark = L.marker([Data_[i][lat_1], Data_[i][lon_1]]);
-    Markers_.push(mark);
+    if(Data_[i].geometry != null){
+      var mark = L.marker([Data_[i].geometry.coordinates[1], Data_[i].geometry.coordinates[0]]).bindPopup(
+        "<dl><dt>Farmers Market Name:</dt>"+ "<dd>" + Data_[i].properties.NAME + "</dd>"
+        + "<dt>Opening Months:</dt>"+ "<dd>" +Data_[i].properties.MONTHS+ "</dd>"
+        + "<dt>Opening Days:</dt>"+ "<dd>" +Data_[i].properties.DAY+ "</dd>"
+        + "<dt>Opening Hours:</dt>"+ "<dd>" +Data_[i].properties.TIME+ "</dd>"
+        + "<dt>Address:</dt>"+ "<dd>" +Data_[i].properties.ADDRESS+ "</dd>"      );
+      Markers_.push(mark);
+    }
   }
   return Markers_;
 };
@@ -58,9 +63,11 @@ var removeMarkers = function(Markers_) {
 
 
 var map = L.map('map', {
-  center: [39.9522, -75.1639],
-  zoom: 14
+  center: [40, -75.1639],
+  zoom: 11
 });
+
+
 var Stamen_TonerLite = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
   attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   subdomains: 'abcd',
@@ -72,22 +79,62 @@ var Stamen_TonerLite = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{
 
 var parsed;
 var markers;
-$("#button" ).click(function() {
-  if (typeof(markers) != "undefined") {      // clear the map before each plot
-    removeMarkers(markers);                  // except the first plot
+
+downloadData = $.ajax(url_1);
+  downloadData.done(function(data) {
+  parsed = parseData(data);
+  markers = makeMarkers(parsed.features);
+  plotMarkers(markers);});
+
+
+var myFilter = function(parsed,slide) {
+  var parsed_s=[]
+  if(slide==0){
+    for(var i = 0; i<parsed.features.length; i++){
+      parsed_s=parsed.features
+    };
   }
-  url_1 = $("#text-input1").val();           // assign the value here rather than in the front
-  lon_1 = $("#text-input2").val();           // in order to get the input after users click the Button
-  lat_1 = $("#text-input3").val();           // in case the users change the default value
-  downloadData = $.ajax(url_1);
-    downloadData.done(function(data) {
-    parsed = parseData(data);
-    markers = makeMarkers(parsed);
-    plotMarkers(markers);});
-})
+  if(slide==1){
+    for(var i = 0; i<parsed.features.length; i++){
+      if(parsed.features[i].properties.DAY=="Sat" ||parsed.features[i].properties.DAY=="Saturdays"||parsed.features[i].properties.DAY=="Sun"){
+        parsed_s.push(parsed.features[i]);
+      }
+    };
+  }
+  else if (slide==2) {
+    for(var i = 0; i<parsed.features.length; i++){
+      if(parsed.features[i].properties.DAY!="Sat"&&parsed.features[i].properties.DAY!="Saturdays"&&parsed.features[i].properties.DAY!="Sun"){
+        parsed_s.push(parsed.features[i]);
+      }
+    };
+  }
+  else if (slide==3) {
+    for(var i = 0; i<parsed.features.length; i++){
+      if(parsed.features[i].properties.MONTHS=="Open year round: 9am - 1pm (May - end of November); 10am - 12pm (Dec-April)" ||parsed.features[i].properties.MONTHS=="Open year round"){
+        parsed_s.push(parsed.features[i]);
+      }
+    };
+  }
+  else if (slide==4) {
+    for(var i = 0; i<parsed.features.length; i++){
+      if(parsed.features[i].properties.ACCEPT_PHILLY_FOOD_BUCKS_=="Y"){
+        parsed_s.push(parsed.features[i]);
+      }
+    };
+  }
+  return parsed_s;
+};
 
-
-
+var change_view = function(slide) {
+  if(slide == 0){
+    map.setView([40, -75.1639],11);
+    console.log(slide);
+  }
+  else{
+    map.setView([40, -75.1639],12);
+    console.log(slide);
+  }
+}
 
 var next = function() {
   if (currentSlide == 0) {
@@ -99,21 +146,21 @@ var next = function() {
     loadSlide(slides[currentSlide])
   }
   if (typeof(markers) != "undefined") {      // clear the map before each plot
-    removeMarkers(markers);                  // except the first plot
+    removeMarkers(markers);
   }
-  url_1 = "http://raw.githubusercontent.com/MUSA611-CPLN692-spring2020/datasets/master/json/philadelphia-bike-crashes-snippet.json"           // assign the value here rather than in the front
-  lon_1 = "LNG"         // in order to get the input after users click the Button
-  lat_1 = "LAT"         // in case the users change the default value
   downloadData = $.ajax(url_1);
     downloadData.done(function(data) {
     parsed = parseData(data);
+    parsed = myFilter(parsed,currentSlide);
     markers = makeMarkers(parsed);
     plotMarkers(markers);});
+  change_view(currentSlide);
   if (currentSlide == slides.length - 1) {
     $('#nextButton').hide()
   }
 
 }
+
 
 var previous = function() {
   if (currentSlide == slides.length - 1) {
@@ -122,15 +169,13 @@ var previous = function() {
   if (typeof(markers) != "undefined" ) {      // clear the map before each plot
     removeMarkers(markers);                  // except the first plot
   }
-  if(currentSlide != 1){
-    url_1 = "http://raw.githubusercontent.com/MUSA611-CPLN692-spring2020/datasets/master/json/philadelphia-bike-crashes-snippet.json"           // assign the value here rather than in the front
-    lon_1 = "LNG"         // in order to get the input after users click the Button
-    lat_1 = "LAT"         // in case the users change the default value
-    downloadData = $.ajax(url_1);
-      downloadData.done(function(data) {
-      parsed = parseData(data);
-      markers = makeMarkers(parsed);
-      plotMarkers(markers);});}
+  downloadData = $.ajax(url_1);
+    downloadData.done(function(data) {
+    parsed = parseData(data);
+    parsed = myFilter(parsed,currentSlide);
+    markers = makeMarkers(parsed);
+    plotMarkers(markers);})
+  change_view(currentSlide-1);
   if (currentSlide == 0) {
   } else {
     $('#previousButton').show()
@@ -149,11 +194,4 @@ $('#nextButton').click(function(e) {
 $('#previousButton').click(function(e) {
   previous()
 })
-
-
-
-
-
-
-
 ;
