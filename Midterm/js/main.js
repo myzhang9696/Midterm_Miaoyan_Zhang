@@ -4,11 +4,11 @@
 // a description
 // background color
 var slides = [
-  { title: "Philadelphia Farmers Markets Guide", description: "This website is a guidebook for citizens and farmers of Philly to know the business hour and other information for Farmers Markest.You can click the marker for more information.", color: "#F0F0F0" },
-  { title: "Farmers Markets work on weekends", description: "There are 14 Farmers Markets open on weekends. Among them, 10 Farmers Markets open on Saturday and 4 Farmers Markets open on Saturdau. Please click the marker to check more details.", color: "#F0F0F0" },
-  { title: "Farmers Markets work on weekdays", description: "There are 36 Farmers Markets open on weekdays. Please click the marker to check more details.", color: "#F0F0F0" },
-  { title: "Farmers Markets work all year around", description: "Only 3 Farmers Markets open all year around, and other Farmers Markets only open a few months, mostly from Spring to Fall.", color: "#F0F0F0" },
-  { title: "Farmers Markets accept Philly Food Bucks", description: "Philly Food Bucks program is a healthy food incentive program, which encourages food stamp recipients to use their benefits to purchase local and fresh ingredients at participating Farmers Markets throughout the Philly. 36 of 50 Farmers Markets participate in this program.", color: "#F0F0F0" }
+  { title: "Philadelphia Farmers Markets Guide", description: "This website is a guidebook for citizens and farmers of Philly to know the business hour and other information for Farmers Markest. Please click the marker for more information.", color: "#F0F0F0" },
+  { title: "Farmers Markets that opening on weekends", description: "There are 14 Farmers Markets open on weekends. Among them, 10 Farmers Markets open on Saturday and 4 Farmers Markets open on Saturdau. Please click the marker to check more details.", color: "#F0F0F0" },
+  { title: "Farmers Markets that opening on weekdays", description: "There are 36 Farmers Markets open on weekdays. Please click the marker to check more details.", color: "#F0F0F0" },
+  { title: "Farmers Markets that opening all year around", description: "Only 3 Farmers Markets open all year around, and other Farmers Markets only open a few months, mostly from Spring to Fall.", color: "#F0F0F0" },
+  { title: "Farmers Markets that accept Philly Food Bucks", description: "Philly Food Bucks program is a healthy food incentive program, which encourages food stamp recipients to use their benefits to purchase local and fresh ingredients at participating Farmers Markets throughout the Philly. 36 of 50 Farmers Markets participate in this program.", color: "#F0F0F0" }
 ]
 var currentSlide = 0
 
